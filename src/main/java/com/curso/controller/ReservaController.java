@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.curso.dtopattern.HotelDTO;
 import com.curso.dtopattern.ReservaDTO;
 import com.curso.model.Reserva;
+import com.curso.model.WrapperReserva;
 import com.curso.service.ReservaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,19 +71,26 @@ public class ReservaController {
 			@ApiResponse(responseCode = "201", description = "La reserva se ha creado con éxito"),
 			@ApiResponse(responseCode = "409", description = "El servicio Vuelo ha rechazado la operacion")
 	})
-	@PostMapping(value = "/{nPersonas}", consumes=MediaType.APPLICATION_JSON_VALUE)
-	public void reservarVuelo(@RequestBody Reserva reserva,@PathVariable int nPersonas) {
-		HttpEntity<Reserva> entity = new HttpEntity<>(reserva);
+	@PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> reservarVuelo(@RequestBody WrapperReserva request) {
 		
-		ResponseEntity<Void> response = template.exchange(URLAVION + "/{idVuelo}/{nPersonas}", HttpMethod.PATCH,
+		Reserva reserva = new Reserva (request.getIdReserva(), request.getNombreCliente(), request.getDni(),request.getIdHotel(), request.getIdVuelo());
+		int nPersonas = request.getPlazas();
+		System.out.println(nPersonas);
+		HttpEntity<Reserva> entity = new HttpEntity<>(reserva);
+		boolean peticionAceptada = true;
+		try {
+		ResponseEntity<Void> response = template.exchange(URLAVION + "/{idVuelo}/{nPersonas}", HttpMethod.PUT,
 				entity, Void.class, reserva.getIdVuelo(), nPersonas);
-		if(response.getStatusCode().is2xxSuccessful()) {
-			//TODO service registra reserva
-			System.out.println("HAY HUECO " + response.getStatusCode());
-			
+		System.out.println(response.getStatusCode());
+		}catch(HttpClientErrorException e) {
+			peticionAceptada = false;
+		}
+		if(peticionAceptada) {
+			service.save(reserva);
+			return new ResponseEntity<>(HttpStatus.CREATED);
 		}else {
-			//TODO error 409
-			System.out.println("NO HAY HUECO " + response.getStatusCode());
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		}
 	}
 }

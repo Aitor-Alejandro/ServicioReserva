@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.curso.dtopattern.ReservaDTO;
+import com.curso.model.Reserva;
 import com.curso.repository.ReservaRepository;
 /**
  * Clase implementadora de las operaciones CRUD de la tabla 'reservas' de la base de datos
@@ -20,6 +20,8 @@ public class ReservaServiceImpl implements ReservaService {
 	public List<Object[]> reservasHotel(long idHotel) {
 		return repository.findReservaDTOByIdHotel(idHotel);
 	}
-	
-	
+	@Override
+	public void save(Reserva reserva) {
+		repository.save(reserva);
+	}
 }
