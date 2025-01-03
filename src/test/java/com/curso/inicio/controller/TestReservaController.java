@@ -1,4 +1,4 @@
-package com.curso.controller.test;
+package com.curso.inicio.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
@@ -34,17 +34,23 @@ class TestReservaController {
 	}
 	
 	@Test
-	public void testGetAll() throws Exception {
+	public void testGetAll()  {
+		try {
 		mockMvc.perform(get("/api/reservas"))
-			.andExpect(status().isOk());
-			//.andExpect(jsonPath("$[0].nombreCliente", is("joseLuisGil")))
-			//.andExpect(jsonPath("$[0].dni", is("456z")));
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0].nombreCliente", is("joseLuisGil")))
+			.andExpect(jsonPath("$[0].dni", is("456z")));
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	/*
+	
 	@Test
 	void testGetById() throws Exception {
 		mockMvc.perform(get("/api/reservas/id/1"))
 			.andExpect(status().isOk());
+		mockMvc.perform(get("/api/reservas/id/2"))
+			.andExpect(status().isNotFound());
 	}
-	*/
+	
 }
