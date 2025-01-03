@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.curso.model.Reserva;
 import com.curso.service.ReservaService;
-@AutoConfigureMockMvc
 @SpringBootTest
+@AutoConfigureMockMvc
 class TestReservaController {
 	@MockitoBean
 	private ReservaService service;
@@ -35,7 +35,7 @@ class TestReservaController {
 	
 	@Test
 	public void testGetAll() throws Exception {
-		mockMvc.perform(get(""))
+		mockMvc.perform(get("/api/reservas"))
 			.andExpect(status().isOk());
 			//.andExpect(jsonPath("$[0].nombreCliente", is("joseLuisGil")))
 			//.andExpect(jsonPath("$[0].dni", is("456z")));
