@@ -44,6 +44,29 @@ public class ReservaController {
 	RestTemplate template;
 	private static final String URLHOTEL = "http://localhost:8080/api/hoteles";
 	private static final String URLAVION = "http://localhost:8081/api/vuelos";
+	
+	@Operation(summary = "Recupera toda la lista de reservas", description = "Recupera todas las reservas existentes en la base de datos", responses = {
+			@ApiResponse(responseCode = "200", description = "Se han logrado devolver todos los elementos de la base de datos")
+	})
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Reserva>> findAll(){
+		return new ResponseEntity<> (service.findAll(), HttpStatus.OK);
+	}
+	@Operation(summary = "Recupera la informacion de una reserva a partir de su Id", description = "Recibe como parametro en la URL el id de una" + 
+	" reserva, si esta reserva existe, devuelve el valor null en caso contrario", responses = {
+			@ApiResponse(responseCode = "200", description = "La reserva existe en la base de datos y se devuelve"),
+			@ApiResponse(responseCode = "404", description = "No existe niguna reserva con el Id solicitado")
+	})
+	@GetMapping(value = "/id/{id}")
+	public ResponseEntity<Reserva> findById(@Parameter(
+			name = "id",
+			description = "El id por el que se pretende buscar a la Reserva",
+			required = true)
+	@PathVariable long id) {
+		Reserva reserva = service.findById(id);
+		HttpStatus status = reserva != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+		return new ResponseEntity<> (service.findById(id), status);
+	}
 	@Operation(summary = "Busca las reservas de un hotel buscando por su nombre", description = "Recibe como parametro de entrada el nombre de un hotel" +
 	" y envia una peticion GET al servicio de Hotel para obtener informacion de ese hotel, una vez que se obtiene la informacion del hotel, se devuelven" +
 	" las reservas existentes para dicho Hotel", responses = {

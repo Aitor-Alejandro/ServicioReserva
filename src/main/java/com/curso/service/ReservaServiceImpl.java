@@ -24,4 +24,15 @@ public class ReservaServiceImpl implements ReservaService {
 	public void save(Reserva reserva) {
 		repository.save(reserva);
 	}
+	@Override
+	public List<Reserva> findAll() {
+		List<Reserva> listReservas = repository.findAll();
+		return listReservas;
+	}
+	@Override
+	public Reserva findById(long id) {
+		Reserva reserva = repository.findById(id).orElse(null);
+		return reserva;
+	}
+	
 }
